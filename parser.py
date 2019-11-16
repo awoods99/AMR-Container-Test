@@ -7,8 +7,7 @@ import copy
 import json
 import datetime
 import keras
-import xlwt
-from xlwt import Workbook
+import xlsxwriter
 
 pdfDirectoryPath = "AmsContainer/"
 
@@ -22,7 +21,9 @@ print("=======================================================================")
 print("")
 
 searchedTerms = ["one health", "one medicine", "animal", "human", "environment", "ecosystem", "ecohealth", "antimicrobial resistance",
-                 "antibiotic resistance", "drug resistance", "multidrug resistance",  "resistance", "AMR", "ABR", "AR", "MDR"]
+                 "antibiotic resistance", "drug resistance", "multidrug resistance",  "resistance", "AMR", "ARB", "AR", "MDR", "dairy",
+                 "cow", "beef", "cattle", "poultry", "swine", "chicken", "pig", "turkey", "fish", "porcine", "bovine", "soil", "agriculture",
+                 "wastewater", "pharmaceutical", "drinking water", "groundwater", "surface water", "compost", "manure", "biosolids", "aquaculture"]
 
 data = {
     "termCounts": {
@@ -39,9 +40,32 @@ data = {
         "multidrug resistance": 0,
         "resistance": 0,
         "AMR": 0,
-        "ABR": 0,
+        "ARB": 0,
         "AR": 0,
-        "MDR": 0
+        "MDR": 0,
+        "dairy": 0,
+        "cow": 0, 
+        "beef": 0, 
+        "cattle": 0, 
+        "poultry": 0, 
+        "swine": 0, 
+        "chicken": 0, 
+        "pig": 0, 
+        "turkey": 0, 
+        "fish": 0, 
+        "porcine": 0, 
+        "bovine": 0, 
+        "soil": 0, 
+        "agriculture": 0,
+        "wastewater": 0, 
+        "pharmaceutical": 0, 
+        "drinking water": 0, 
+        "groundwater": 0, 
+        "surface water": 0, 
+        "compost": 0, 
+        "manure": 0, 
+        "biosolids": 0, 
+        "aquaculture": 0
     },
     "sentenceWordCounts": {
         "one health": {},
@@ -57,9 +81,32 @@ data = {
         "multidrug resistance": {},
         "resistance": {},
         "AMR": {},
-        "ABR": {},
+        "ARB": {},
         "AR": {},
-        "MDR": {}
+        "MDR": {},
+        "dairy": {},
+        "cow": {}, 
+        "beef": {}, 
+        "cattle": {}, 
+        "poultry": {}, 
+        "swine": {}, 
+        "chicken": {}, 
+        "pig": {}, 
+        "turkey": {}, 
+        "fish": {}, 
+        "porcine": {}, 
+        "bovine": {}, 
+        "soil": {}, 
+        "agriculture": {},
+        "wastewater": {}, 
+        "pharmaceutical": {}, 
+        "drinking water": {}, 
+        "groundwater": {}, 
+        "surface water": {}, 
+        "compost": {}, 
+        "manure": {}, 
+        "biosolids": {}, 
+        "aquaculture": {}
     },
     "termJournalNames": {
         "one health": {},
@@ -75,9 +122,32 @@ data = {
         "multidrug resistance": {},
         "resistance": {},
         "AMR": {},
-        "ABR": {},
+        "ARB": {},
         "AR": {},
-        "MDR": {}
+        "MDR": {},
+        "dairy": {},
+        "cow": {}, 
+        "beef": {}, 
+        "cattle": {}, 
+        "poultry": {}, 
+        "swine": {}, 
+        "chicken": {}, 
+        "pig": {}, 
+        "turkey": {}, 
+        "fish": {}, 
+        "porcine": {}, 
+        "bovine": {}, 
+        "soil": {}, 
+        "agriculture": {},
+        "wastewater": {}, 
+        "pharmaceutical": {}, 
+        "drinking water": {}, 
+        "groundwater": {}, 
+        "surface water": {}, 
+        "compost": {}, 
+        "manure": {}, 
+        "biosolids": {}, 
+        "aquaculture": {}
     },
     "termYears": {
         "one health": {},
@@ -93,9 +163,32 @@ data = {
         "multidrug resistance": {},
         "resistance": {},
         "AMR": {},
-        "ABR": {},
+        "ARB": {},
         "AR": {},
-        "MDR": {}
+        "MDR": {},
+        "dairy": {},
+        "cow": {}, 
+        "beef": {}, 
+        "cattle": {}, 
+        "poultry": {}, 
+        "swine": {}, 
+        "chicken": {}, 
+        "pig": {}, 
+        "turkey": {}, 
+        "fish": {}, 
+        "porcine": {}, 
+        "bovine": {}, 
+        "soil": {}, 
+        "agriculture": {},
+        "wastewater": {}, 
+        "pharmaceutical": {}, 
+        "drinking water": {}, 
+        "groundwater": {}, 
+        "surface water": {}, 
+        "compost": {}, 
+        "manure": {}, 
+        "biosolids": {}, 
+        "aquaculture": {}
     }
 }
 
@@ -115,12 +208,12 @@ def time():
 
 
 def printData(key, term=None):
-    print "\n========== PRINTING DATA (" + key.upper() + ") =========="
+    print("\n========== PRINTING DATA " + key.upper() + "==========")
     for termVal in list(data[key]):
         if term == None or term == termVal:
-            print "\n" + termVal + ": " + str(data[key][termVal])
+            print("\n" + termVal + ": " + str(data[key][termVal]))
 
-    print "\n========== DONE =========="
+    print("\n========== DONE ==========")
 
 
 lastSentenceWord = None
@@ -200,9 +293,32 @@ differenceInData = {
         "multidrug resistance": 0,
         "resistance": 0,
         "AMR": 0,
-        "ABR": 0,
+        "ARB": 0,
         "AR": 0,
-        "MDR": 0
+        "MDR": 0,
+        "dairy": 0,
+        "cow": 0, 
+        "beef": 0, 
+        "cattle": 0, 
+        "poultry": 0, 
+        "swine": 0, 
+        "chicken": 0, 
+        "pig": 0, 
+        "turkey": 0, 
+        "fish": 0, 
+        "porcine": 0, 
+        "bovine": 0, 
+        "soil": 0, 
+        "agriculture": 0,
+        "wastewater": 0, 
+        "pharmaceutical": 0, 
+        "drinking water": 0, 
+        "groundwater": 0, 
+        "surface water": 0, 
+        "compost": 0, 
+        "manure": 0, 
+        "biosolids": 0, 
+        "aquaculture": 0
     }
 }
 
@@ -221,7 +337,7 @@ def updateData(pmcId):
     sentence = " "
     sentenceComplete = False
     compoundWordChecks = ["one", "antibiotic",
-                          "drug", "antimicrobial", "multidrug"]
+                          "drug", "antimicrobial", "multidrug", 'drinking', 'surface']
     firstWord = None
     check = False
     for line in file:
@@ -268,6 +384,10 @@ def updateData(pmcId):
                 elif firstWord == "one" and word == "health":
                     word = firstWord + " " + word
                 elif firstWord == "multidrug" and word == "resistance":
+                    word = firstWord + " " + word
+                elif firstWord == "drinking" and word == "water":
+                    word = firstWord + " " + word
+                elif firstWord == "surface" and word == "water":
                     word = firstWord + " " + word
             if word in compoundWordChecks:
                 check = True
@@ -327,8 +447,55 @@ pdfNum = 0
 print("Number of Articles = " +
       str(len(os.listdir(pdfDirectoryPath)) - 1) + " (" + time() + ")\n")
 test = True
-articleData = {}
-articleData['Parsed Articles'] = []
+
+workbook = xlsxwriter.Workbook('specificData.xlsx')
+worksheet = workbook.add_worksheet()
+worksheet.write('A1', 'Article Number')
+worksheet.write('B1', 'PMC ID')
+worksheet.write('C1', 'Article Title')
+worksheet.write('D1', 'Year Published')
+worksheet.write('E1', 'Journal')
+worksheet.write('F1', 'Authors')
+worksheet.write('G1', 'Count for "one health"')
+worksheet.write('H1', 'Count for "one medicine"')
+worksheet.write('I1', 'Count for "animal"')
+worksheet.write('J1', 'Count for "human"')
+worksheet.write('K1', 'Count for "environment"')
+worksheet.write('L1', 'Count for "ecosystem"')
+worksheet.write('M1', 'Count for "ecohealth"')
+worksheet.write('N1', 'Count for "antimicrobial resistance"')
+worksheet.write('O1', 'Count for "antibiotic resistance"')
+worksheet.write('P1', 'Count for "drug resistance"')
+worksheet.write('Q1', 'Count for "multidrug resistance"')
+worksheet.write('R1', 'Count for "resistance"')
+worksheet.write('S1', 'Count for "AMR"')
+worksheet.write('T1', 'Count for "ARB"')
+worksheet.write('U1', 'Count for "AR"')
+worksheet.write('V1', 'Count for "MDR"')
+worksheet.write('W1', 'Count for "dairy"')
+worksheet.write('X1', 'Count for "cow"')
+worksheet.write('Y1', 'Count for "beef"')
+worksheet.write('Z1', 'Count for "cattle"')
+worksheet.write('AA1', 'Count for "poultry"')
+worksheet.write('AB1', 'Count for "swine"')
+worksheet.write('AC1', 'Count for "chicken"')
+worksheet.write('AD1', 'Count for "pig"')
+worksheet.write('AE1', 'Count for "turkey"')
+worksheet.write('AF1', 'Count for "fish"')
+worksheet.write('AG1', 'Count for "porcine"')
+worksheet.write('AH1', 'Count for "bovine"')
+worksheet.write('AI1', 'Count for "soil"')
+worksheet.write('AJ1', 'Count for "agriculture"')
+worksheet.write('AK1', 'Count for "wastewater"')
+worksheet.write('AL1', 'Count for "pharmaceutical"')
+worksheet.write('AM1', 'Count for "drinking water"')
+worksheet.write('AN1', 'Count for "groundwater"')
+worksheet.write('AO1', 'Count for "surface water"')
+worksheet.write('AP1', 'Count for "compost"')
+worksheet.write('AQ1', 'Count for "manure"')
+worksheet.write('AR1', 'Count for "biosolids"')
+worksheet.write('AS1', 'Count for "aquaculture"')
+
 for name in os.listdir(pdfDirectoryPath):
     if "eupmc" in name or ".DS_Store" == name:
         continue
@@ -344,33 +511,62 @@ for name in os.listdir(pdfDirectoryPath):
         # if ((pdfNum + 1) % 10 == 0):
         print("\npdfNum = " + str(pdfNum + 1) + " (" + time() + ")\n")
         updateData(name)
-        with open(pdfDirectoryPath + pmcId + "/eupmc_result.json") as json_file2:
+        with open(pdfDirectoryPath + name + "/eupmc_result.json") as json_file2:
             specficData = json.load(json_file2)
-        articleData['Parsed Articles'].append({
-            'Article Number' : pdfNum,
-            'PMC ID' : json_file2['pmcid'],
-            'Article Title' : json_file2['title'],
-            'Year Published' : json_file2['pubYear'],
-            'Journal' : json_file2['journalInfo: journal: title'],
-            'Authors' : json_file2['authorString'],
-            'Count for "one health"' : differenceInData["termCountsPerArticle"]['one health'],
-            'Count for "one medicine"' : differenceInData["termCountsPerArticle"]['one medicine'],
-            'Count for "animal"' : differenceInData["termCountsPerArticle"]['animal'],
-            'Count for "human"': differenceInData["termCountsPerArticle"]['human'],
-            'Count for "environment"' : differenceInData["termCountsPerArticle"]['environment'],
-            'Count for "ecosystem"' : differenceInData["termCountsPerArticle"]['ecosystem'],
-            'Count for "ecohealth"' : differenceInData["termCountsPerArticle"]['ecohealth'],
-            'Count for "antimicrobial resistance"' : differenceInData["termCountsPerArticle"]['antimicrobial resistance'],
-            'Count for "antibiotic resistance"' : differenceInData["termCountsPerArticle"]['antibiotic resistance'],
-            'Count for "drug resistance"' : differenceInData["termCountsPerArticle"]['drug resistance'],
-            'Count for "multidrug resistance"' : differenceInData["termCountsPerArticle"]['multidrug resistance'],
-            'Count for "resistance"' : differenceInData["termCountsPerArticle"]['resistance'],
-            'Count for "AMR"' : differenceInData["termCountsPerArticle"]['AMR'],
-            'Count for "ABR"' : differenceInData["termCountsPerArticle"]['ABR'],
-            'Count for "AR"': differenceInData["termCountsPerArticle"]['AR'],
-            'Count for "MDR"' : differenceInData["termCountsPerArticle"]['MDR']
+        #create an array that stores the data for each category for only this 'name'. deletes after every iteration of for.
+        #use array to access data from excel
 
-        })
+        #helpful links: https://stackabuse.com/reading-and-writing-json-to-a-file-in-python/
+            #https://xlsxwriter.readthedocs.io/
+            #
+
+        #for (p in specificData[])
+
+        worksheet.write(pdfNum + 1, 0, pdfNum)
+        worksheet.write(pdfNum + 1, 1, specficData['pmcid'])
+        worksheet.write(pdfNum + 1, 2, json_file2['title'])
+        worksheet.write(pdfNum + 1, 3, json_file2['pubYear'])
+        worksheet.write(pdfNum + 1, 4, json_file2['journalInfo: journal: title'])
+        worksheet.write(pdfNum + 1, 5, json_file2['authorString'])
+        worksheet.write(pdfNum + 1, 6, differenceInData["termCountsPerArticle"]['one health'])
+        worksheet.write(pdfNum + 1, 7, differenceInData["termCountsPerArticle"]['one medicine'])
+        worksheet.write(pdfNum + 1, 8, differenceInData["termCountsPerArticle"]['animal'])
+        worksheet.write(pdfNum + 1, 9, differenceInData["termCountsPerArticle"]['human'])
+        worksheet.write(pdfNum + 1, 10, differenceInData["termCountsPerArticle"]['environment'])
+        worksheet.write(pdfNum + 1, 11, differenceInData["termCountsPerArticle"]['ecosystem'])
+        worksheet.write(pdfNum + 1, 12, differenceInData["termCountsPerArticle"]['ecohealth'])
+        worksheet.write(pdfNum + 1, 13, differenceInData["termCountsPerArticle"]['antimicrobial resistance'])
+        worksheet.write(pdfNum + 1, 14, differenceInData["termCountsPerArticle"]['antibiotic resistance'])
+        worksheet.write(pdfNum + 1, 15, differenceInData["termCountsPerArticle"]['drug resistance'])
+        worksheet.write(pdfNum + 1, 16, differenceInData["termCountsPerArticle"]['multidrug resistance'])
+        worksheet.write(pdfNum + 1, 17, differenceInData["termCountsPerArticle"]['resistance'])
+        worksheet.write(pdfNum + 1, 18, differenceInData["termCountsPerArticle"]['AMR'])
+        worksheet.write(pdfNum + 1, 19, differenceInData["termCountsPerArticle"]['ARB'])
+        worksheet.write(pdfNum + 1, 20, differenceInData["termCountsPerArticle"]['AR'])
+        worksheet.write(pdfNum + 1, 21, differenceInData["termCountsPerArticle"]['MDR'])
+        worksheet.write(pdfNum + 1, 22, differenceInData["termCountsPerArticle"]['dairy'])
+        worksheet.write(pdfNum + 1, 23, differenceInData["termCountsPerArticle"]['cow'])
+        worksheet.write(pdfNum + 1, 24, differenceInData["termCountsPerArticle"]['beef'])
+        worksheet.write(pdfNum + 1, 25, differenceInData["termCountsPerArticle"]['cattle'])
+        worksheet.write(pdfNum + 1, 26, differenceInData["termCountsPerArticle"]['poultry'])
+        worksheet.write(pdfNum + 1, 27, differenceInData["termCountsPerArticle"]['swine'])
+        worksheet.write(pdfNum + 1, 28, differenceInData["termCountsPerArticle"]['chicken'])
+        worksheet.write(pdfNum + 1, 29, differenceInData["termCountsPerArticle"]['pig'])
+        worksheet.write(pdfNum + 1, 30, differenceInData["termCountsPerArticle"]['turkey'])
+        worksheet.write(pdfNum + 1, 31, differenceInData["termCountsPerArticle"]['fish'])
+        worksheet.write(pdfNum + 1, 32, differenceInData["termCountsPerArticle"]['porcine'])
+        worksheet.write(pdfNum + 1, 33, differenceInData["termCountsPerArticle"]['bovine'])
+        worksheet.write(pdfNum + 1, 34, differenceInData["termCountsPerArticle"]['soil'])
+        worksheet.write(pdfNum + 1, 35, differenceInData["termCountsPerArticle"]['agriculuture'])
+        worksheet.write(pdfNum + 1, 36, differenceInData["termCountsPerArticle"]['wastewater'])
+        worksheet.write(pdfNum + 1, 37, differenceInData["termCountsPerArticle"]['pharmaceutical'])
+        worksheet.write(pdfNum + 1, 38, differenceInData["termCountsPerArticle"]['drinking water'])
+        worksheet.write(pdfNum + 1, 39, differenceInData["termCountsPerArticle"]['groundwater'])
+        worksheet.write(pdfNum + 1, 40, differenceInData["termCountsPerArticle"]['surface water'])
+        worksheet.write(pdfNum + 1, 41, differenceInData["termCountsPerArticle"]['compost'])
+        worksheet.write(pdfNum + 1, 42, differenceInData["termCountsPerArticle"]['manure'])
+        worksheet.write(pdfNum + 1, 44, differenceInData["termCountsPerArticle"]['biosolids'])
+        worksheet.write(pdfNum + 1, 44, differenceInData["termCountsPerArticle"]['aquaculture'])
         pdfNum += 1
     else:
         print("ERROR: pdf Path ( " + str(pdfPath) + " ) does not exist...")
@@ -522,11 +718,11 @@ barPlot(barData[0], barData[1], title=title, xlabel=xlabel, ylabel=ylabel)
 file = open("top_article_words.csv", "w")
 pmcId = "PMC2973834"
 for pmcId in articleWordCounts:
-    print "\n" + pmcId + ":"
+    print("\n" + pmcId + ":")
     topWords = articleWordTable(pmcId=pmcId)
     file.write(pmcId+ ":\n")
     for w in topWords:
-        print w
+        print(w)
         file.write(str(w[0]) + "," + str(w[1]) + "\n")
 file.close()
 
@@ -568,7 +764,7 @@ file = open("top_words_overall.txt", "w")
 topWords = overallTopWordsTable(n=25)
 first = True
 for w in topWords:
-    print "\n'" + w[0] + "'" + ": " + str(w[1])
+    print("\n'" + w[0] + "'" + ": " + str(w[1]))
     file.write(w[0] + ": " + str(w[1]) + "\n")
     x.append(w[0])
     y.append(w[1])
